@@ -26,7 +26,7 @@ class TokenManager:
                 "grant_type": "client_credentials",
                 "client_id": client_id,
                 "client_secret": client_secret,
-                "scope": "OR.Default OR.Monitoring OR.Jobs OR.Robots OR.Folders"
+                "scope": "OR.Default OR.Monitoring.Read OR.Robots.Read OR.Jobs.Read OR.Folders"
             }
             headers = {
                 "Content-Type": "application/x-www-form-urlencoded"
@@ -100,12 +100,12 @@ class ToolService:
         }
 
         params = {
-        "$filter": f"JobId eq {job_id}",
-        "$orderby": "TimeStamp desc",
-        "$top": top
+            "$filter": f"JobId eq '{job_id}'"
         }
 
         response = requests.get(url, headers=headers, params=params)
+        print(response.status_code)
+        print(response.text)
         response.raise_for_status()
 
         return response.json().get("value", [])
