@@ -106,7 +106,9 @@ class ToolService:
         response = requests.get(url, headers=headers, params=params)
         response.raise_for_status()
         logs = response.json().get("value", [])
-        return [{"Message": log.get("Message")} for log in logs]
+        return logs
+    
+    # [{"Message": log.get("Message")} for log in logs]
 
 
 token = TokenManager()
