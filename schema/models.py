@@ -1,7 +1,12 @@
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
-import json
+from enum import Enum
+
+class HandingStatus(Enum):
+    HANDLED = "HANDLED"
+    UNHANDLED = "UNHANDLED"
+    AMBIGUOUS = "AMBIGUOUS"
 
 @dataclass
 class LogEvent:
@@ -13,5 +18,21 @@ class LogEvent:
     activity: Optional[str]
     fingerprint: Optional[str]
     
+@dataclass
+class ErrorEvent:
+    error_id:str
+    timestamp: datetime
+    message: str
+    activity: Optional[str]
+    fingerprint: Optional[str]
+    raw_event: LogEvent
 
+@dataclass
+class ExecutionSegment:
+    segment_id: str
+    job_id: str
+    phase: str
+    start_time: datetime
+    end_time: Optional[datetime]
+    events: list[LogEvent]
 
