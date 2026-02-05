@@ -1,4 +1,4 @@
-import requests, os, datetime, time
+import requests, os, json, time
 
 class TokenManager:
     def __init__(self):        
@@ -88,9 +88,9 @@ class ToolService:
         if not jobs:
             return "No jobs found."
         print(response.status_code)
-        return jobs["value"][0]["Id"]
+        return jobs["value"][0]
 
-    def get_Job_Logs(self, top:int, job_id:str):
+    def get_Job_Logs(self, job_id:str):
         access_token = self.token_provider.get_access_token()
         url = f"{self.url}/odata/RobotLogs"
         headers = {
@@ -100,24 +100,22 @@ class ToolService:
         }
 
         params = {
-            "$filter": f"JobId eq '{job_id}'"
+            "$filter": f"JobKey eq {job_id}",
         }
 
         response = requests.get(url, headers=headers, params=params)
-        print(response.status_code)
-        print(response.text)
         response.raise_for_status()
-
-        return response.json().get("value", [])
-
-
+        logs = response.json().get("value", [])
+        return [{"Message": log.get("Message")} for log in logs]
 
 
 token = TokenManager()
 obj = ToolService(token_provider=token)
-jobid = obj.get_Jobs("DummyProcess","Faulted")
-print(jobid)
-job_details = obj.get_job_details(job_id=jobid)
+job_details_obj = obj.get_Jobs("DummyProcess","Faulted")
+print(job_details_obj["Key"])
+print(job_details_obj["Id"])
+job_details = obj.get_job_details(job_id=job_details_obj["Id"])
 # print(job_details)
-logs = obj.get_Job_Logs(job_id=jobid, top=1)
-print(logs)
+logs = obj.get_Job_Logs(job_id=job_details_obj["Key"])
+print(json.dumps(logs, indent=2, sort_keys=True, ensure_ascii=False))
+
