@@ -12,6 +12,6 @@ class LogEvent:
     process_name: str
     activity: Optional[str]
     fingerprint: Optional[str]
-    raw: dict
+    
 
 

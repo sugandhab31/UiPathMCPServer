@@ -1,26 +1,24 @@
 from datetime import datetime
 import json
 from schema.models import LogEvent
+from mcp.mcp_tools import TokenManager, ToolService
 
 def normalize_logs(raw_logs: list[dict]) -> list[LogEvent]:
     events = []
 
     for log in raw_logs:
         raw_msg = json.loads(log["RawMessage"])
-
+        print(log["Message"])
         events.append(
             LogEvent(
                 timestamp=datetime.fromisoformat(raw_msg["timeStamp"].replace("Z","+00:00")),
-                level=log["level"],
+                level=log["Level"],
                 message=log["Message"],
                 job_id=log["JobKey"],
                 process_name=log["ProcessName"],
                 activity=raw_msg.get("fileName"),
-                fingerprint=raw_msg.get("fingerprint"),
-                raw=log
+                fingerprint=raw_msg.get("fingerprint")
             )            
         )
 
-        return sorted(events, key=lambda e: e.timestamp)
-    
-
+    return sorted(events, key=lambda e: e.timestamp)

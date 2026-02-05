@@ -108,16 +108,5 @@ class ToolService:
         logs = response.json().get("value", [])
         return logs
     
-    # [{"Message": log.get("Message")} for log in logs]
 
-
-token = TokenManager()
-obj = ToolService(token_provider=token)
-job_details_obj = obj.get_Jobs("DummyProcess","Faulted")
-print(job_details_obj["Key"])
-print(job_details_obj["Id"])
-job_details = obj.get_job_details(job_id=job_details_obj["Id"])
-# print(job_details)
-logs = obj.get_Job_Logs(job_id=job_details_obj["Key"])
-print(json.dumps(logs, indent=2, sort_keys=True, ensure_ascii=False))
 
