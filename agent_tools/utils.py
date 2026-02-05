@@ -18,7 +18,8 @@ def normalize_logs(raw_logs: list[dict]) -> list[LogEvent]:
                 job_id=log["JobKey"],
                 process_name=log["ProcessName"],
                 activity=raw_msg.get("fileName"),
-                fingerprint=raw_msg.get("fingerprint")
+                fingerprint=raw_msg.get("fingerprint"),
+                raw = log
             )            
         )
 
@@ -60,26 +61,24 @@ def segment_execution(events: list[LogEvent]) -> list[ExecutionSegment]:
 
     return segments
 
-def extract_error_events(segments: list[ExecutionSegment]) -> list[ErrorEvent]:
+def extract_error_events(events: list[LogEvent]) -> list[ErrorEvent]:
     errors = []
 
-    for segment in segments:
-        for event in segment.events:
-            if event.level.lower() == "error":
-                errors.append(
-                    ErrorEvent(
-                        error_id=str(uuid.uuid4()),
-                        segment_id=segment.segment_id,
-                        timestamp=event.timestamp,
-                        activity=event.activity,
-                        message=event.message,
-                        exception_type=extract_exception_type(event.message),
-                        fingerprint=event.fingerprint,
-                        raw_event=event
-                    )
+    for event in events:
+        if event.level.lower() == "error":
+            errors.append(
+                ErrorEvent(
+                    error_id=str(uuid.uuid4()),
+                    timestamp=event.timestamp,
+                    message=event.message,
+                    activity=event.activity,
+                    fingerprint=event.fingerprint,
+                    raw_event=event
                 )
+            )
 
     return errors
+
 
 def extract_exception_type(message: str) -> Optional[str]:
     if "could not find the user-interface" in message.lower():
@@ -121,7 +120,7 @@ def execution_continued_after_error(
 def classify_error_handling(
         errors: list[ErrorEvent],
         events: list[LogEvent]
-) -> dict[str, HandingStatus]:
+) -> dict[str, HandlingStatus]:
     """
     Returns:
     { error_id: HandlingStatus }
@@ -133,13 +132,14 @@ def classify_error_handling(
         continued = execution_continued_after_error(error, events)
 
         if job_state == "FAULTED":
-            results[error.error_id] = HandingStatus.UNHANDLED
+            results[error.error_id] = HandlingStatus.UNHANDLED
         elif job_state == "SUCCESS" and continued:
-            results[error.error_id] = HandingStatus.HANDLED
+            results[error.error_id] = HandlingStatus.HANDLED
         elif job_state == "UNKNOWN":
             if continued:
-                results[error.error_id] = HandingStatus.AMBIGUOUS
+                results[error.error_id] = HandlingStatus.AMBIGUOUS
             else:
-                results[error.error_id] = HandingStatus.UNHANDLED
+                results[error.error_id] = HandlingStatus.UNHANDLED
         else:
-            results[error.error_id] = HandingStatus.AMBIGUOUS
+            results[error.error_id] = HandlingStatus.AMBIGUOUS
+    return results

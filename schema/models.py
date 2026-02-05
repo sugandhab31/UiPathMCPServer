@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional
 from enum import Enum
 
-class HandingStatus(Enum):
+class HandlingStatus(Enum):
     HANDLED = "HANDLED"
     UNHANDLED = "UNHANDLED"
     AMBIGUOUS = "AMBIGUOUS"
@@ -17,6 +17,7 @@ class LogEvent:
     process_name: str
     activity: Optional[str]
     fingerprint: Optional[str]
+    raw: dict
     
 @dataclass
 class ErrorEvent:
