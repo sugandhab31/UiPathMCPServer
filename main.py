@@ -18,8 +18,8 @@ def main():
     # print(data)
     errors = extract_error_events(events)
     handling = classify_error_handling(errors, events)
-    for error_id, status in handling.items():
-        print(error_id, status.value)
+    # for error_id, status in handling.items():
+    #     print(error_id, status.value)
 
     AIReasonerInput.process_name = "DummyProcess"
     AIReasonerInput.job_id = job_key
@@ -28,7 +28,7 @@ def main():
         AIReasonerInput.error = error
         AIReasonerInput.handling_status = error.handling_status
         print(f"\nError ID: {error.error_id}")
-        print(f"Status: {status.value}")
+        print(f"Status: {error.handling_status.value}")
         explanation = reasoner.explain_error(AIReasonerInput)
         print("\nAI Explanation:")
         print(explanation)
