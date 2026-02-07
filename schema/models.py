@@ -27,6 +27,7 @@ class ErrorEvent:
     activity: Optional[str]
     fingerprint: Optional[str]
     raw_event: LogEvent
+    handling_status: HandlingStatus = None
 
 @dataclass
 class ExecutionSegment:
@@ -37,3 +38,9 @@ class ExecutionSegment:
     end_time: Optional[datetime]
     events: list[LogEvent]
 
+@dataclass
+class AIReasonerInput:
+    error: ErrorEvent
+    handling_status: HandlingStatus
+    process_name: str
+    job_id: str

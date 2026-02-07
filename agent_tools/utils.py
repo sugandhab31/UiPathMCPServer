@@ -133,13 +133,18 @@ def classify_error_handling(
 
         if job_state == "FAULTED":
             results[error.error_id] = HandlingStatus.UNHANDLED
+            error.handling_status = HandlingStatus.UNHANDLED
         elif job_state == "SUCCESS" and continued:
             results[error.error_id] = HandlingStatus.HANDLED
+            error.handling_status = HandlingStatus.HANDLED
         elif job_state == "UNKNOWN":
             if continued:
                 results[error.error_id] = HandlingStatus.AMBIGUOUS
+                error.handling_status = HandlingStatus.AMBIGUOUS
             else:
                 results[error.error_id] = HandlingStatus.UNHANDLED
+                error.handling_status = HandlingStatus.UNHANDLED
         else:
             results[error.error_id] = HandlingStatus.AMBIGUOUS
+            error.handling_status = HandlingStatus.AMBIGUOUS
     return results

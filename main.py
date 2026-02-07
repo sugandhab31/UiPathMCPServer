@@ -1,4 +1,5 @@
 from agent_tools.utils import *
+from agent_tools.ai_reasoner import *
 from mcp.mcp_tools import TokenManager, ToolService
 from schema import models
 import json
@@ -19,6 +20,18 @@ def main():
     handling = classify_error_handling(errors, events)
     for error_id, status in handling.items():
         print(error_id, status.value)
+
+    AIReasonerInput.process_name = "DummyProcess"
+    AIReasonerInput.job_id = job_key
+    reasoner = AIReasoner()
+    for error in errors:
+        AIReasonerInput.error = error
+        AIReasonerInput.handling_status = error.handling_status
+        print(f"\nError ID: {error.error_id}")
+        print(f"Status: {status.value}")
+        explanation = reasoner.explain_error(AIReasonerInput)
+        print("\nAI Explanation:")
+        print(explanation)
 
 if __name__ == "__main__":
     main()
