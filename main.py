@@ -33,5 +33,7 @@ def main():
         print("\nAI Explanation:")
         print(explanation)
 
+    #starting optimizations
+
 if __name__ == "__main__":
     main()
