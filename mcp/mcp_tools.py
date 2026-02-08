@@ -1,16 +1,17 @@
-import requests, os, json, time
+import requests, os, json, time, threading
 
 class TokenManager:
     def __init__(self):        
         self._access_token = None
         self._expires_at = 0
+        self._lock = threading.Lock()
 
     def get_access_token(self):
         try:
             now = time.time()
-            if self._access_token is not None and now < self._expires_at - 120:
-                print("fetching existing token")
-                return self._access_token
+            with self._lock:
+                if self._access_token and time.time() < self._expires_at - 60:
+                    return self._access_token
 
             BASE_URL = "https://cloud.uipath.com/identity_/connect/token"
             client_id = os.getenv("UIPATH_CLIENT_ID")
