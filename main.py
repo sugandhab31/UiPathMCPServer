@@ -11,13 +11,21 @@ def main():
     # print(token_obj.get_access_token())
     # pass token to ToolService to get job Key
     tool_obj = ToolService(token_provider=token_obj,folder_id="5165358")
-    job_details = tool_obj.get_Jobs("DummyProcess","Faulted")
+    job_details = tool_obj.get_Jobs("DummyProcess","Successful")
     job_key = job_details["Key"]
     # pass job key to fetch raw logs
     raw_logs = tool_obj.get_Job_Logs(job_id=job_key)
     # normalize the raw logs and sort according to timestamp
     events = normalize_logs(raw_logs=raw_logs)
-    print(events)
+    # print(events)
+    job_result = analyze_job(events)
+    print("Job Name: ", job_result.process_name)
+    print("Job Key: ",job_key)
+    print("Job State:", job_result.job_state)
+    print("Errors:", job_result.error_count)
+    print("Handling Summary:", job_result.handling_summary)
+    for error in job_result.errors:
+        print(f"Error Message: {error.message}\tHandling Status:{error.handling_status}")
     # errors = extract_error_events(events)
     # handling = classify_error_handling(errors, events)
     # for error_id, status in handling.items():

@@ -148,3 +148,42 @@ def classify_error_handling(
             results[error.error_id] = HandlingStatus.AMBIGUOUS
             error.handling_status = HandlingStatus.AMBIGUOUS
     return results
+
+def analyze_job(events: list[LogEvent]) -> JobAnalysisResult:
+    if not events:
+        raise ValueError("Cannot analyze empty event list")
+    
+    job_id = events[0].job_id
+    process_name = events[0].process_name
+
+    errors = extract_error_events(events)
+    handling = classify_error_handling(errors,events)
+
+    job_state = detect_job_end_state(events)
+
+    handling_summary = {
+        HandlingStatus.HANDLED: 0,
+        HandlingStatus.UNHANDLED: 0,
+        HandlingStatus.AMBIGUOUS: 0
+    }
+
+    # if job_metadata.state == "Successful":
+    #     for error in errors:
+    #         if error.handling == HandlingStatus.AMBIGUOUS:
+    #             error.handling = HandlingStatus.HANDLED
+
+
+    for status in handling.values():
+        handling_summary[status] += 1
+
+    return JobAnalysisResult(
+        job_id=job_id,
+        process_name=process_name,
+        start_time=events[0].timestamp,
+        end_time=events[-1].timestamp,
+        job_state=job_state,
+        total_events=len(events),
+        error_count=len(errors),
+        handling_summary=handling_summary,
+        errors=errors
+    )

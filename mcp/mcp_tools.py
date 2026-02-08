@@ -75,7 +75,7 @@ class ToolService:
                 "$filter": f"JobKey eq {job_id}",
                 "$skip": skip,
                 "$top": top,
-                "$order by": "Timestamp desc"
+                "$orderby": "TimeStamp desc"
             }       
             response = self._session.get(
                 url, 
