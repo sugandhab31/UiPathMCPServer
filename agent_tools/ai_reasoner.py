@@ -1,5 +1,4 @@
 from schema.models import *
-from openai import OpenAI 
 from agent_tools.utils import *
 import json
 import subprocess
