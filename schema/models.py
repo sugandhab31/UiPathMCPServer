@@ -44,3 +44,16 @@ class AIReasonerInput:
     handling_status: HandlingStatus
     process_name: str
     job_id: str
+
+@dataclass
+class JobAnalysisResult:
+    job_id: str
+    process_name: str
+    start_time: Optional[datetime]
+    end_time: Optional[datetime]
+    job_state: str
+    total_events: int
+    error_count: int
+    handling_summary: dict[HandlingStatus, int]
+    errors: list[ErrorEvent]
+
